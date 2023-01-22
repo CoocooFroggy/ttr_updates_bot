@@ -29,7 +29,7 @@ class TTRFile {
       "hash": hash,
       "compHash": compHash,
       "patches": patches.map((key, value) => MapEntry(key, value.toBson())),
-      "only": jsonEncode(only),
+      "only": only,
     };
   }
 

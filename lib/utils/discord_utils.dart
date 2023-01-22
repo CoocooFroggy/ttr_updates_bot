@@ -43,8 +43,8 @@ class DiscordUtils {
       ..title = 'New file: ${file.name}'
       ..color = DiscordColor.sapGreen
       ..fields = [
-        EmbedFieldBuilder('URL', file.downloadUrl, true),
-        EmbedFieldBuilder('Hash', file.hash, true),
+        EmbedFieldBuilder('URL', file.downloadUrl, false),
+        EmbedFieldBuilder('Hash', file.hash, false),
         _buildPatchesField(file.patches),
       ];
     // Hard-coded ID
@@ -52,6 +52,7 @@ class DiscordUtils {
     // TODO: Still failing
     await client.httpEndpoints
         .sendMessage(Snowflake('708290762797875230'), MessageBuilder.embed(eb));
+    sleep(Duration(seconds: 1));
   }
 
   static EmbedFieldBuilder _buildPatchesField(Map<String, Patch> patches) {
@@ -64,6 +65,6 @@ class DiscordUtils {
     return EmbedFieldBuilder(
         'Patches',
         '${patches.length}${patches.isNotEmpty ? ' (from ${previousHashes.join(", ")})' : ''}',
-        true);
+        false);
   }
 }

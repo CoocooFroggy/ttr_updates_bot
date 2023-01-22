@@ -24,14 +24,14 @@ class MongoUtils {
   }
 
   /// Inserts a TTRFile into the Files collection.
-  static void insertFile(TTRFile file) {
-    _ensureConnection();
+  static Future<void> insertFile(TTRFile file) async {
+    await _ensureConnection();
     _db.collection('Files').insert(file.toBson());
   }
 
   /// Inserts a TTRFile into the Files collection.
   static Future<bool> fileHashExists(String hash) async {
-    _ensureConnection();
+    await _ensureConnection();
     final find = await _db.collection('Files').findOne(where.eq('hash', hash));
     // If the hash exists, return true
     return (find != null);
