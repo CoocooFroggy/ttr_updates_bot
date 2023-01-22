@@ -1,32 +1,10 @@
-import 'dart:io';
-
-import 'package:nyxx/nyxx.dart';
-import 'package:nyxx_commands/nyxx_commands.dart';
-import 'package:ttr_updates_bot/commands/ping.dart';
+import 'package:ttr_updates_bot/scanner/update_scanner.dart';
+import 'package:ttr_updates_bot/utils/discord_utils.dart';
+import 'package:ttr_updates_bot/utils/mongo_utils.dart';
 
 void main() async {
-  final client = NyxxFactory.createNyxxWebsocket(
-    Platform.environment['TOKEN']!,
-    GatewayIntents.allUnprivileged,
-  );
+  await DiscordUtils.connect();
+  await MongoUtils.connectToDb();
 
-  final commands = CommandsPlugin(
-    prefix: (_) => Platform.environment['PREFIX']!,
-  );
-
-  client
-    ..registerPlugin(Logging())
-    ..registerPlugin(CliIntegration())
-    ..registerPlugin(commands);
-
-  if (Platform.environment['DEBUG'] != null) {
-    client.registerPlugin(IgnoreExceptions());
-  }
-
-  // Register commands, listeners, services and setup any extra packages here
-  commands.addCommand(ping);
-
-  await client.connect();
-
-  // TODO: Start scanner
+  UpdateScanner().startScanner();
 }
