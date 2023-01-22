@@ -32,8 +32,10 @@ class MongoUtils {
   /// Inserts a TTRFile into the Files collection.
   static Future<bool> fileHashExists(String hash) async {
     await _ensureConnection();
-    final find = await _db.collection('Files').findOne(where.eq('hash', hash));
+    // Strangely, we cannot use findOne because it causes an error
+    // after exactly 20 reads.
+    final find = _db.collection('Files').find(where.eq('hash', hash));
     // If the hash exists, return true
-    return (find != null);
+    return (!await find.isEmpty);
   }
 }

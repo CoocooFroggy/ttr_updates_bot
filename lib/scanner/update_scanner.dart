@@ -13,7 +13,6 @@ class UpdateScanner {
   Future<void> startScanner() async {
     checkForNewFiles();
     timer = Timer.periodic(Duration(seconds: 30), (timer) {
-      print('Running');
       checkForNewFiles();
     });
   }
@@ -30,7 +29,7 @@ class UpdateScanner {
         key, TTRFile.fromJson(value as Map<String, dynamic>, name: key)));
 
     // Compare to database of updates
-    for (var file in map.values) {
+    for (final file in map.values) {
       // If the file doesn't exist
       if (!(await MongoUtils.fileHashExists(file.hash))) {
         print('New file:\n$file\n----------');
