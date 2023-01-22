@@ -63,7 +63,7 @@ class DiscordUtils {
     // 2 (from 59d4e, 99be4)
     return EmbedFieldBuilder(
         'Patches',
-        '${patches.length}${patches.isNotEmpty ? '(from ${previousHashes.join(", ")})' : ''}',
+        '${patches.length}${patches.isNotEmpty ? ' (from ${previousHashes.join(", ")})' : ''}',
         true);
   }
 }
