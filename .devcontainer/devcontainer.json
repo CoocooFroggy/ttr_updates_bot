@@ -1,0 +1,22 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.245.2/containers/docker-existing-docker-compose
+// If you want to run as a non-root user in the container, see .devcontainer/docker-compose.yml.
+{
+	"name": "ttr_updates_bot",
+	"dockerComposeFile": [
+		"../docker-compose.yml",
+		"docker-compose.yml"
+	],
+	"service": "ttr_updates_bot",
+
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"dart-code.dart-code"
+			]
+		}
+	},
+
+	"workspaceFolder": "/workspace",
+	"remoteUser": "vscode"
+}
