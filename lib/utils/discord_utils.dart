@@ -10,6 +10,11 @@ class DiscordUtils {
   static late final INyxxWebsocket client;
 
   static Future<void> connect() async {
+    if (Platform.environment['CHANNEL_ID'] == null) {
+      print('No CHANNEL_ID specified in environment variables.');
+      exit(1);
+    }
+
     client = NyxxFactory.createNyxxWebsocket(
       Platform.environment['TOKEN']!,
       GatewayIntents.allUnprivileged,
@@ -27,7 +32,7 @@ class DiscordUtils {
       ..registerPlugin(CliIntegration())
       ..registerPlugin(commands);
 
-    if (Platform.environment['DEBUG'] != null) {
+    if (Platform.environment['DEBUG'] == null) {
       client.registerPlugin(IgnoreExceptions());
     }
 
@@ -48,8 +53,9 @@ class DiscordUtils {
         _buildPatchesField(file.patches),
       ];
     // Hard-coded ID
-    await client.httpEndpoints
-        .sendMessage(Snowflake('708290762797875230'), MessageBuilder.embed(eb));
+    await client.httpEndpoints.sendMessage(
+        Snowflake(Platform.environment['CHANNEL_ID']!),
+        MessageBuilder.embed(eb));
   }
 
   static EmbedFieldBuilder _buildPatchesField(Map<String, Patch> patches) {
