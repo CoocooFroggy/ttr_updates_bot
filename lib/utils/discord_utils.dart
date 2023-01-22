@@ -48,11 +48,8 @@ class DiscordUtils {
         _buildPatchesField(file.patches),
       ];
     // Hard-coded ID
-    // Nyxx is terrible with rate limits so we'll await
-    // TODO: Still failing
     await client.httpEndpoints
         .sendMessage(Snowflake('708290762797875230'), MessageBuilder.embed(eb));
-    sleep(Duration(seconds: 1));
   }
 
   static EmbedFieldBuilder _buildPatchesField(Map<String, Patch> patches) {

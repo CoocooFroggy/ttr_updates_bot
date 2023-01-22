@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:http/http.dart';
 import 'package:ttr_updates_bot/utils/discord_utils.dart';
@@ -9,9 +8,11 @@ import 'package:ttr_updates_bot/utils/mongo_utils.dart';
 import 'objects/ttr_file.dart';
 
 class UpdateScanner {
+  Timer? timer;
+
   Future<void> startScanner() async {
     checkForNewFiles();
-    Timer timer = Timer.periodic(Duration(seconds: 30), (timer) {
+    timer = Timer.periodic(Duration(seconds: 30), (timer) {
       print('Running');
       checkForNewFiles();
     });
@@ -30,16 +31,12 @@ class UpdateScanner {
 
     // Compare to database of updates
     for (var file in map.values) {
-      print(file);
       // If the file doesn't exist
       if (!(await MongoUtils.fileHashExists(file.hash))) {
-        print('New file!');
-        MongoUtils.insertFile(file);
+        print('New file:\n$file\n----------');
         DiscordUtils.reportNewFile(file);
-      } else {
-        print('Old file, ${file.name}');
+        MongoUtils.insertFile(file);
       }
-      sleep(Duration(milliseconds: 100));
     }
   }
 }
