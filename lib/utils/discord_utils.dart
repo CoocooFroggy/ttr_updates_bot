@@ -22,7 +22,8 @@ class DiscordUtils {
     );
 
     final commands = CommandsPlugin(
-      prefix: (_) => Platform.environment['PREFIX']!,
+      // Ignore by slashOnly CommandType
+      prefix: (_) => '!',
       options: CommandsOptions(
         defaultCommandType: CommandType.slashOnly,
       ),
