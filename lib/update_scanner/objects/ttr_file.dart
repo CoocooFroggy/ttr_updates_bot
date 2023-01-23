@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'patch.dart';
 
 class TTRFile {
