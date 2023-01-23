@@ -31,7 +31,7 @@ class UpdateScanner {
     // Compare to database of updates
     for (final file in map.values) {
       // If the file doesn't exist
-      if (!(await MongoUtils.fileHashExists(file.hash))) {
+      if (!await MongoUtils.fileHashExists(file.hash)) {
         print('New file:\n$file\n----------');
         DiscordUtils.reportNewFile(file);
         MongoUtils.insertFile(file);

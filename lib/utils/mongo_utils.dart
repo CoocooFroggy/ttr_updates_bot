@@ -1,7 +1,8 @@
 import 'dart:io';
 
 import 'package:mongo_dart/mongo_dart.dart';
-import 'package:ttr_updates_bot/scanner/objects/ttr_file.dart';
+import 'package:ttr_updates_bot/release_note_scanner/objects/release_note_full.dart';
+import 'package:ttr_updates_bot/update_scanner/objects/ttr_file.dart';
 
 class MongoUtils {
   static late final Db _db;
@@ -23,6 +24,7 @@ class MongoUtils {
     }
   }
 
+  // region Files
   /// Inserts a TTRFile into the Files collection.
   static Future<void> insertFile(TTRFile file) async {
     await _ensureConnection();
@@ -38,4 +40,24 @@ class MongoUtils {
     // If the hash exists, return true
     return (!await find.isEmpty);
   }
+
+  // endregion
+
+  // region Release Notes
+  static Future<void> insertReleaseNoteFull(
+      ReleaseNoteFull releaseNoteFull) async {
+    await _ensureConnection();
+    _db.collection('Release Notes').insert(releaseNoteFull.toBson());
+  }
+
+  static Future<bool> noteIdExists(int noteId) async {
+    await _ensureConnection();
+    // Strangely, we cannot use findOne because it causes an error
+    // after exactly 20 reads.
+    final find =
+        _db.collection('Release Notes').find(where.eq('noteId', noteId));
+    // If the noteId exists, return true
+    return (!await find.isEmpty);
+  }
+// endregion
 }

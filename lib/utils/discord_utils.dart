@@ -3,8 +3,9 @@ import 'dart:io';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:ttr_updates_bot/commands/ping.dart';
-import 'package:ttr_updates_bot/scanner/objects/patch.dart';
-import 'package:ttr_updates_bot/scanner/objects/ttr_file.dart';
+import 'package:ttr_updates_bot/release_note_scanner/objects/release_note_full.dart';
+import 'package:ttr_updates_bot/update_scanner/objects/patch.dart';
+import 'package:ttr_updates_bot/update_scanner/objects/ttr_file.dart';
 
 class DiscordUtils {
   static late final INyxxWebsocket client;
@@ -42,6 +43,7 @@ class DiscordUtils {
     await client.connect();
   }
 
+  // region Files
   static Future<void> reportNewFile(TTRFile file) async {
     EmbedBuilder eb = EmbedBuilder();
     eb
@@ -52,7 +54,6 @@ class DiscordUtils {
         EmbedFieldBuilder('Hash', file.hash, false),
         _buildPatchesField(file.patches),
       ];
-    // Hard-coded ID
     await client.httpEndpoints.sendMessage(
         Snowflake(Platform.environment['CHANNEL_ID']!),
         MessageBuilder.embed(eb));
@@ -70,4 +71,34 @@ class DiscordUtils {
         '${patches.length}${patches.isNotEmpty ? ' (from ${previousHashes.join(", ")})' : ''}',
         false);
   }
+
+  // endregion
+
+  // region Release Notes
+  static Future<void> reportNewReleaseNote(
+      ReleaseNoteFull releaseNoteFull) async {
+    EmbedBuilder eb = EmbedBuilder();
+    eb
+      ..title = 'New release note: ${releaseNoteFull.slug}'
+      ..color = DiscordColor.azure
+      ..description = convertMdToDiscord(releaseNoteFull)
+      ..fields = [
+        EmbedFieldBuilder('Note ID', releaseNoteFull.noteId, false),
+      ]
+      ..timestamp = releaseNoteFull.date;
+    await client.httpEndpoints.sendMessage(
+        Snowflake(Platform.environment['CHANNEL_ID']!),
+        MessageBuilder.embed(eb));
+  }
+
+  static String convertMdToDiscord(ReleaseNoteFull releaseNoteFull) {
+    var newBody = releaseNoteFull.body
+        .replaceAllMapped(
+          RegExp(r'^=(.+)'),
+          (match) => '__${match.group(1)}__',
+        );
+    print(releaseNoteFull);
+    return newBody;
+  }
+// endregion
 }
