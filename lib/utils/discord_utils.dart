@@ -80,7 +80,11 @@ class DiscordUtils {
       ReleaseNoteFull releaseNoteFull) async {
     EmbedBuilder eb = EmbedBuilder();
     var description = convertMdToDiscord(releaseNoteFull);
-    for (var match in RegExp(r'.{1,2048}', dotAll: true).allMatches(description)) {
+    for (var match in RegExp(
+      r'.{1,2048}(?:\n|$)',
+      // Match 1–2048 characters and make the splits at newlines
+      dotAll: true,
+    ).allMatches(description)) {
       eb
         ..title = releaseNoteFull.slug
         ..color = DiscordColor.azure
@@ -96,10 +100,15 @@ class DiscordUtils {
   }
 
   static String convertMdToDiscord(ReleaseNoteFull releaseNoteFull) {
-    var newBody = releaseNoteFull.body.replaceAllMapped(
-      RegExp(r'^=(.+)'),
-      (match) => '__${match.group(1)}__',
-    );
+    var newBody = releaseNoteFull.body
+        .replaceAllMapped(
+          RegExp(r'^=(.+)', multiLine: true),
+          (match) => '__${match.group(1)}__',
+        )
+        .replaceAllMapped(
+          RegExp(r'^\*(.+)', multiLine: true),
+          (match) => '•${match.group(1)}',
+        );
     print(releaseNoteFull);
     return newBody;
   }
