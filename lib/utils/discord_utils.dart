@@ -79,20 +79,27 @@ class DiscordUtils {
   static Future<void> reportNewReleaseNote(
       ReleaseNoteFull releaseNoteFull) async {
     EmbedBuilder eb = EmbedBuilder();
-    var description = convertMdToDiscord(releaseNoteFull);
-    for (var match in RegExp(
+    final description = convertMdToDiscord(releaseNoteFull);
+    final allMatches = RegExp(
       r'.{1,2048}(?:\n|$)',
       // Match 1–2048 characters and make the splits at newlines
       dotAll: true,
-    ).allMatches(description)) {
+    ).allMatches(description).toList();
+    for (int i = 0; i < allMatches.length; i++) {
+      eb = EmbedBuilder();
+      final match = allMatches[i];
+      // On the first iteration, add the title
       eb
-        ..title = releaseNoteFull.slug
         ..color = DiscordColor.azure
-        ..description = match.group(0)
-        ..fields = [
-          EmbedFieldBuilder('Note ID', releaseNoteFull.noteId, false),
-        ]
-        ..timestamp = releaseNoteFull.date;
+        ..description = match.group(0);
+      if (i == 0) {
+        eb.title = releaseNoteFull.slug;
+      } else if (i == allMatches.length - 1) {
+        eb
+          ..footer = (EmbedFooterBuilder()
+            ..text = 'Note ID: ${releaseNoteFull.noteId}')
+          ..timestamp = releaseNoteFull.date;
+      }
       await client.httpEndpoints.sendMessage(
           Snowflake(Platform.environment['CHANNEL_ID']!),
           MessageBuilder.embed(eb));
