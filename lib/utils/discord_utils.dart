@@ -79,25 +79,27 @@ class DiscordUtils {
   static Future<void> reportNewReleaseNote(
       ReleaseNoteFull releaseNoteFull) async {
     EmbedBuilder eb = EmbedBuilder();
-    eb
-      ..title = 'New release note: ${releaseNoteFull.slug}'
-      ..color = DiscordColor.azure
-      ..description = convertMdToDiscord(releaseNoteFull)
-      ..fields = [
-        EmbedFieldBuilder('Note ID', releaseNoteFull.noteId, false),
-      ]
-      ..timestamp = releaseNoteFull.date;
-    await client.httpEndpoints.sendMessage(
-        Snowflake(Platform.environment['CHANNEL_ID']!),
-        MessageBuilder.embed(eb));
+    var description = convertMdToDiscord(releaseNoteFull);
+    for (var match in RegExp(r'.{1,2048}', dotAll: true).allMatches(description)) {
+      eb
+        ..title = releaseNoteFull.slug
+        ..color = DiscordColor.azure
+        ..description = match.group(0)
+        ..fields = [
+          EmbedFieldBuilder('Note ID', releaseNoteFull.noteId, false),
+        ]
+        ..timestamp = releaseNoteFull.date;
+      await client.httpEndpoints.sendMessage(
+          Snowflake(Platform.environment['CHANNEL_ID']!),
+          MessageBuilder.embed(eb));
+    }
   }
 
   static String convertMdToDiscord(ReleaseNoteFull releaseNoteFull) {
-    var newBody = releaseNoteFull.body
-        .replaceAllMapped(
-          RegExp(r'^=(.+)'),
-          (match) => '__${match.group(1)}__',
-        );
+    var newBody = releaseNoteFull.body.replaceAllMapped(
+      RegExp(r'^=(.+)'),
+      (match) => '__${match.group(1)}__',
+    );
     print(releaseNoteFull);
     return newBody;
   }
