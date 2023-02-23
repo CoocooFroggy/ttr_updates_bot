@@ -10,17 +10,17 @@ class ReleaseNoteSummary {
 
   Map<String, dynamic> toBson() {
     return {
-      "noteId": noteId,
-      "slug": slug,
-      "date": date,
+      'noteId': noteId,
+      'slug': slug,
+      'date': date,
     };
   }
 
   factory ReleaseNoteSummary.fromJson(Map<String, dynamic> json) {
     return ReleaseNoteSummary(
-      noteId: json["noteId"] as int,
-      slug: json["slug"] as String,
-      date: DateFormat('MMMM d, yyyy \'at\' h:mm a').parse(json["date"] as String),
+      noteId: json['noteId'] as int,
+      slug: json['slug'] as String,
+      date: DateFormat('MMMM d, yyyy \'at\' h:mm a').parse(json['date'] as String),
     );
   }
 

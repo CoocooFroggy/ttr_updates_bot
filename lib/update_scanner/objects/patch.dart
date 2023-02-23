@@ -16,18 +16,18 @@ class Patch {
 
   Map<String, dynamic> toBson() {
     return {
-      "filename": filename,
-      "patchHash": patchHash,
-      "compPatchHash": compPatchHash,
+      'filename': filename,
+      'patchHash': patchHash,
+      'compPatchHash': compPatchHash,
     };
   }
 
   factory Patch.fromJson(Map<String, dynamic> json, {required String id}) {
     return Patch(
       previousHash: id,
-      filename: json["filename"] as String,
-      patchHash: json["patchHash"] as String,
-      compPatchHash: json["compPatchHash"] as String,
+      filename: json['filename'] as String,
+      patchHash: json['patchHash'] as String,
+      compPatchHash: json['compPatchHash'] as String,
     );
   }
 

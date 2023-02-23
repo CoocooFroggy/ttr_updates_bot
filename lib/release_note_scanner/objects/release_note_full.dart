@@ -14,19 +14,19 @@ class ReleaseNoteFull {
 
   Map<String, dynamic> toBson() {
     return {
-      "noteId": noteId,
-      "slug": slug,
-      "date": date,
-      "body": body,
+      'noteId': noteId,
+      'slug': slug,
+      'date': date,
+      'body': body,
     };
   }
 
   factory ReleaseNoteFull.fromJson(Map<String, dynamic> json) {
     return ReleaseNoteFull(
-      noteId: json["noteId"] as int,
-      slug: json["slug"] as String,
+      noteId: json['noteId'] as int,
+      slug: json['slug'] as String,
       date: DateFormat('MMMM d, yyyy \'at\' h:mm a')
-          .parse(json["date"] as String),
+          .parse(json['date'] as String),
       body: json['body'] as String,
     );
   }

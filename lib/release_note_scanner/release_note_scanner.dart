@@ -36,8 +36,19 @@ class ReleaseNoteScanner {
           jsonDecode(response.body) as Map<String, dynamic>;
       final releaseNoteFull = ReleaseNoteFull.fromJson(json);
       print('New release note:\n$releaseNoteFull\n----------');
-      DiscordUtils.reportNewReleaseNote(releaseNoteFull);
       MongoUtils.insertReleaseNoteFull(releaseNoteFull);
+
+      // Report to all the servers
+      var servers = await MongoUtils.fetchAllServersWithUpdates();
+      for (var settings in servers) {
+        // Skip servers who don't have this set up
+        if (settings.updatesChannelId == null) {
+          continue;
+        }
+        DiscordUtils.reportNewReleaseNote(
+            releaseNoteFull: releaseNoteFull,
+            channelId: settings.updatesChannelId!);
+      }
     }
   }
 }

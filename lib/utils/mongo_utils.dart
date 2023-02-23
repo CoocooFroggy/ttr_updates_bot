@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:ttr_updates_bot/release_note_scanner/objects/release_note_full.dart';
+import 'package:ttr_updates_bot/release_note_scanner/objects/server_settings.dart';
 import 'package:ttr_updates_bot/update_scanner/objects/ttr_file.dart';
 
 class MongoUtils {
@@ -23,6 +24,61 @@ class MongoUtils {
       print('MongoDB reconnected');
     }
   }
+
+  // region Server Settings
+
+  /// Replaces the role that should be pinged on new updates
+  static Future<void> upsertServerSettings(ServerSettings settings) async {
+    await _ensureConnection();
+    _db.collection('Server Settings').replaceOne(
+          where.eq('guildId', settings.guildId),
+          settings.toBson(),
+          upsert: true,
+        );
+  }
+
+  static Future<ServerSettings?> fetchSettings(String guildId) async {
+    await _ensureConnection();
+    final bson = await _db
+        .collection('Server Settings')
+        .findOne(where.eq('guildId', guildId));
+    // Is there a shorthand for this?
+    return bson == null ? null : ServerSettings.fromJson(bson);
+  }
+
+  static Future<void> setUpdatesRole(
+    String guildId, {
+    required String roleId,
+  }) async {
+    await _ensureConnection();
+    _db.collection('Server Settings').updateOne(
+          where.eq('guildId', guildId),
+          modify.set('updatesRoleId', roleId),
+          upsert: true,
+        );
+  }
+
+  static Future<void> setUpdatesChannel(
+    String guildId, {
+    required String channelId,
+  }) async {
+    await _ensureConnection();
+    _db.collection('Server Settings').updateOne(
+          where.eq('guildId', guildId),
+          modify.set('updatesChannelId', channelId),
+          upsert: true,
+        );
+  }
+
+  static Future<List<ServerSettings>> fetchAllServersWithUpdates() async {
+    final List<Map<String, dynamic>> list = await _db
+        .collection('Server Settings')
+        .find(where.exists('updatesChannelId'))
+        .toList();
+    return list.map((e) => ServerSettings.fromJson(e)).toList();
+  }
+
+  // endregion
 
   // region Files
   /// Inserts a TTRFile into the Files collection.

@@ -22,25 +22,25 @@ class TTRFile {
 
   Map<String, dynamic> toBson() {
     return {
-      "name": name,
-      "dl": dl,
-      "hash": hash,
-      "compHash": compHash,
-      "patches": patches.map((key, value) => MapEntry(key, value.toBson())),
-      "only": only,
+      'name': name,
+      'dl': dl,
+      'hash': hash,
+      'compHash': compHash,
+      'patches': patches.map((key, value) => MapEntry(key, value.toBson())),
+      'only': only,
     };
   }
 
   factory TTRFile.fromJson(Map<String, dynamic> json, {required String name}) {
     return TTRFile(
       name: name,
-      dl: json["dl"] as String,
-      hash: json["hash"] as String,
-      compHash: json["compHash"] as String,
-      patches: (json["patches"] as Map<String, dynamic>).map((key, value) =>
+      dl: json['dl'] as String,
+      hash: json['hash'] as String,
+      compHash: json['compHash'] as String,
+      patches: (json['patches'] as Map<String, dynamic>).map((key, value) =>
           MapEntry(
               key, Patch.fromJson(value as Map<String, dynamic>, id: key))),
-      only: List.from(json["only"] as Iterable),
+      only: List.from(json['only'] as Iterable),
     );
   }
 
