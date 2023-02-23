@@ -4,10 +4,10 @@ import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:ttr_updates_bot/commands/set_updates_channel.dart';
 import 'package:ttr_updates_bot/commands/set_updates_role.dart';
-import 'package:ttr_updates_bot/release_note_scanner/objects/release_note_full.dart';
-import 'package:ttr_updates_bot/release_note_scanner/objects/server_settings.dart';
-import 'package:ttr_updates_bot/update_scanner/objects/patch.dart';
-import 'package:ttr_updates_bot/update_scanner/objects/ttr_file.dart';
+import 'package:ttr_updates_bot/scanners/release_note_scanner/objects/release_note_full.dart';
+import 'package:ttr_updates_bot/scanners/release_note_scanner/objects/server_settings.dart';
+import 'package:ttr_updates_bot/scanners/update_scanner/objects/patch.dart';
+import 'package:ttr_updates_bot/scanners/update_scanner/objects/ttr_file.dart';
 
 class DiscordUtils {
   static late final INyxxWebsocket client;

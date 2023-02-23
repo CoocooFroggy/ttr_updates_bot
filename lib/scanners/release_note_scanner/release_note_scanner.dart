@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart';
-import 'package:ttr_updates_bot/release_note_scanner/objects/release_note_full.dart';
-import 'package:ttr_updates_bot/release_note_scanner/objects/release_note_summary.dart';
+import 'package:ttr_updates_bot/scanners/release_note_scanner/objects/release_note_full.dart';
+import 'package:ttr_updates_bot/scanners/release_note_scanner/objects/release_note_summary.dart';
 import 'package:ttr_updates_bot/utils/discord_utils.dart';
 import 'package:ttr_updates_bot/utils/mongo_utils.dart';
 

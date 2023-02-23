@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:mongo_dart/mongo_dart.dart';
-import 'package:ttr_updates_bot/release_note_scanner/objects/release_note_full.dart';
-import 'package:ttr_updates_bot/release_note_scanner/objects/server_settings.dart';
-import 'package:ttr_updates_bot/update_scanner/objects/ttr_file.dart';
+import 'package:ttr_updates_bot/scanners/release_note_scanner/objects/release_note_full.dart';
+import 'package:ttr_updates_bot/scanners/release_note_scanner/objects/server_settings.dart';
+import 'package:ttr_updates_bot/scanners/update_scanner/objects/ttr_file.dart';
 
 class MongoUtils {
   static late final Db _db;
