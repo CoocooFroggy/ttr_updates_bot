@@ -5,6 +5,7 @@
 - `applications.commands`
 - `bot`
   - Send Messages
+  - Mention Everyone
 
 ## Environment variables
 - `TOKEN`: Discord bot token
