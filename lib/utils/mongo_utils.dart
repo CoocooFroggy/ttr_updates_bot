@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:ttr_updates_bot/scanners/release_note_scanner/objects/release_note_full.dart';
 import 'package:ttr_updates_bot/scanners/release_note_scanner/objects/server_settings.dart';
+import 'package:ttr_updates_bot/scanners/status_scanner/objects/ttr_status.dart';
 import 'package:ttr_updates_bot/scanners/update_scanner/objects/ttr_file.dart';
 
 class MongoUtils {
@@ -115,5 +116,23 @@ class MongoUtils {
     // If the noteId exists, return true
     return (!await find.isEmpty);
   }
-// endregion
+  // endregion
+
+  // region Status
+
+  static Future<void> insertStatus(TTRStatus status) async {
+    await _ensureConnection();
+    _db.collection('Status').insert(status.toBson());
+  }
+
+  static Future<TTRStatus?> fetchLatestStatus() async {
+    await _ensureConnection();
+    final bson = await _db.collection('Status').findOne(where.sortBy('_id', descending: true));
+    if (bson == null) {
+      return null;
+    }
+    return TTRStatus.fromJson(bson);
+  }
+
+  // endregion
 }

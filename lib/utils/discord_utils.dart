@@ -6,6 +6,7 @@ import 'package:ttr_updates_bot/commands/set_updates_channel.dart';
 import 'package:ttr_updates_bot/commands/set_updates_role.dart';
 import 'package:ttr_updates_bot/scanners/release_note_scanner/objects/release_note_full.dart';
 import 'package:ttr_updates_bot/scanners/release_note_scanner/objects/server_settings.dart';
+import 'package:ttr_updates_bot/scanners/status_scanner/objects/ttr_status.dart';
 import 'package:ttr_updates_bot/scanners/update_scanner/objects/patch.dart';
 import 'package:ttr_updates_bot/scanners/update_scanner/objects/ttr_file.dart';
 
@@ -137,15 +138,32 @@ class DiscordUtils {
     }
     // Build the message
     final builder = MessageBuilder()
-          ..allowedMentions = (AllowedMentions()..allow(roles: true))
-          ..embeds = [eb];
+      ..allowedMentions = (AllowedMentions()..allow(roles: true))
+      ..embeds = [eb];
     // Add optional ping
     if (serverSettings.updatesRoleId != null) {
       builder.content = '<@&${serverSettings.updatesRoleId}>';
     }
     // Send the message
-    await client.httpEndpoints.sendMessage(
-        Snowflake(serverSettings.updatesChannelId),
-        builder);
+    await client.httpEndpoints
+        .sendMessage(Snowflake(serverSettings.updatesChannelId), builder);
   }
+
+  // region Status
+
+  static Future<void> reportNewStatus({
+    required String channelId,
+    required TTRStatus status,
+  }) async {
+    EmbedBuilder eb = EmbedBuilder();
+    eb
+      ..title = 'Status update'
+      ..color = status.open ? DiscordColor.green : DiscordColor.red
+      ..description = status.banner;
+    // Send the message
+    await client.httpEndpoints
+        .sendMessage(Snowflake(channelId), MessageBuilder.embed(eb));
+  }
+
+// endregion
 }
