@@ -40,11 +40,17 @@ class MongoUtils {
 
   static Future<ServerSettings?> fetchSettings(String guildId) async {
     await _ensureConnection();
-    final bson = await _db
+    // Strangely, we cannot use findOne because it causes an error
+    // after exactly 20 reads.
+    final findResult = await _db
         .collection('Server Settings')
-        .findOne(where.eq('guildId', guildId));
-    // Is there a shorthand for this?
-    return bson == null ? null : ServerSettings.fromJson(bson);
+        .find(where.eq('guildId', guildId))
+        .toList();
+    if (findResult.isEmpty) {
+      return null;
+    }
+    final bson = findResult.first;
+    return ServerSettings.fromJson(bson);
   }
 
   static Future<void> setUpdatesRole(
@@ -116,6 +122,7 @@ class MongoUtils {
     // If the noteId exists, return true
     return (!await find.isEmpty);
   }
+
   // endregion
 
   // region Status
@@ -127,12 +134,18 @@ class MongoUtils {
 
   static Future<TTRStatus?> fetchLatestStatus() async {
     await _ensureConnection();
-    final bson = await _db.collection('Status').findOne(where.sortBy('_id', descending: true));
-    if (bson == null) {
+    // Strangely, we cannot use findOne because it causes an error
+    // after exactly 20 reads.
+    var findResult = await _db
+        .collection('Status')
+        .find(where.sortBy('_id', descending: true))
+        .toList();
+    if (findResult.isEmpty) {
       return null;
     }
+    final bson = findResult.first;
     return TTRStatus.fromJson(bson);
   }
 
-  // endregion
+// endregion
 }
