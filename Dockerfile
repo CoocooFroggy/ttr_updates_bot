@@ -2,6 +2,7 @@ FROM dart:stable
 
 WORKDIR /bot
 
+# TODO: Install panda3d
 # Install dependencies
 COPY pubspec.* /bot/
 RUN dart pub get

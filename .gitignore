@@ -33,3 +33,6 @@ doc/api/
 
 # IDEA
 .idea/
+
+tmp/
+ttr_update_files/
