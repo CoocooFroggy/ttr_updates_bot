@@ -60,15 +60,18 @@ class UpdateScanner {
     }
     await tmpDir.create();
 
+    print('Decoding and extracting files...');
     for (var ttrFile in newFiles) {
       File file = await downloadFile(url: ttrFile.downloadUrl, path: 'tmp');
       // If the file is compressed
       if (extension(file.path) == '.bz2') {
         // Decompress it
-        final archive = BZip2Decoder().decodeBuffer(InputFileStream(file.path));
+        final inputStream = InputFileStream(file.path);
+        final archive = BZip2Decoder().decodeBuffer(inputStream);
         final outputStream = OutputFileStream(join(tmpDir.path, ttrFile.name));
         outputStream.writeBytes(archive);
-        outputStream.close();
+        await outputStream.close();
+        await inputStream.close();
         // Delete the archive
         await file.delete();
         file = File(join(tmpDir.path, ttrFile.name));
@@ -102,6 +105,7 @@ class UpdateScanner {
         }
       }
     }
+    print('Finished!');
 
     // Copy the entire tmp dir to the github
     await copyPath(tmpDir.path, GitUtils.directory.path);

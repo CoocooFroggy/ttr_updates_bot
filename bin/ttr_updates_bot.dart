@@ -8,8 +8,9 @@ import 'package:ttr_updates_bot/utils/git_utils.dart';
 import 'package:ttr_updates_bot/utils/mongo_utils.dart';
 
 void main() async {
+  final ghToken = Platform.environment['GH_TOKEN'];
   final cloneSucceeded = await GitUtils.cloneRepo(
-      "https://github.com/CoocooFroggy/ttr_update_files.git");
+      "https://coocoofroggy:$ghToken@github.com/CoocooFroggy/ttr_update_files.git");
   if (!cloneSucceeded) {
     stderr.writeln('Failed to clone the phase diffing repository.');
     return;

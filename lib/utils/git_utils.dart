@@ -33,7 +33,7 @@ class GitUtils {
 
     // Clear it if it exists already
     if (await directory.exists()) {
-      directory.delete(recursive: true);
+      await directory.delete(recursive: true);
     }
 
     var process = await Process.run('git', ['clone', url]);
@@ -67,31 +67,36 @@ class GitUtils {
   }
 
   static Future<bool> commitAndPush(String? ttrVersion) async {
-    var process = await Process.run('git', ['add', '.'],
+    print('Adding...');
+    var process = await Process.start('git', ['add', '.'],
         workingDirectory: directory.path);
-    if (process.exitCode != 0) {
-      stdout.writeln(process.stdout);
-      stderr.writeln(process.stderr);
+    stdout.addStream(process.stdout);
+    stderr.addStream(process.stderr);
+    if (await process.exitCode != 0) {
       return false;
     }
-    process = await Process.run('git', ['commit', '-m', ttrVersion ?? 'Update'],
+    print('Added.');
+    print('Committing...');
+    process = await Process.start('git', ['commit', '-m', ttrVersion ?? 'Update'],
         workingDirectory: directory.path);
-    if (process.exitCode != 0) {
+    stdout.addStream(process.stdout);
+    stderr.addStream(process.stderr);
+    if (await process.exitCode != 0) {
       // Only error if the problem isn't about having nothing to commit
       if (!(process.stdout as String).contains('nothing to commit')) {
-        print(process.exitCode);
-        stdout.writeln(process.stdout);
-        stderr.writeln(process.stderr);
         return false;
       }
     }
+    print('Committed.');
+    print('Pushing...');
     process =
-        await Process.run('git', ['push'], workingDirectory: directory.path);
-    if (process.exitCode != 0) {
-      stdout.writeln(process.stdout);
-      stderr.writeln(process.stderr);
+        await Process.start('git', ['push'], workingDirectory: directory.path);
+    stdout.addStream(process.stdout);
+    stderr.addStream(process.stderr);
+    if (await process.exitCode != 0) {
       return false;
     }
+    print('Pushed!');
     return true;
   }
 }
