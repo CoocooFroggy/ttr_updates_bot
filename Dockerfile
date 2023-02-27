@@ -2,6 +2,10 @@ FROM dart:stable
 
 WORKDIR /bot
 
+# Install panda3d
+ADD docker_panda.sh .
+RUN ./docker_panda.sh
+
 # Install dependencies
 COPY pubspec.* /bot/
 RUN dart pub get

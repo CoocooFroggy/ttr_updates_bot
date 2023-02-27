@@ -4,8 +4,10 @@ import 'dart:io';
 
 import 'package:archive/archive_io.dart';
 import 'package:http/http.dart';
+import 'package:io/io.dart';
 import 'package:path/path.dart';
 import 'package:ttr_updates_bot/utils/discord_utils.dart';
+import 'package:ttr_updates_bot/utils/git_utils.dart';
 import 'package:ttr_updates_bot/utils/mongo_utils.dart';
 
 import 'objects/ttr_file.dart';
@@ -41,19 +43,76 @@ class UpdateScanner {
       if (!await MongoUtils.fileHashExists(file.hash)) {
         print('New file:\n$file\n----------');
         newFiles.add(file);
+        MongoUtils.insertFile(file);
+      }
+    }
+
+    // Quit early if there's nothing new
+    if (newFiles.isEmpty) {
+      return;
+    }
+
+    // Download files to tmp/
+    final tmpDir = Directory('tmp');
+    // Clear the directory in case it was already used
+    if (await tmpDir.exists()) {
+      await tmpDir.delete(recursive: true);
+    }
+    await tmpDir.create();
+
+    print('Decoding and extracting files...');
+    for (var ttrFile in newFiles) {
+      File file = await downloadFile(url: ttrFile.downloadUrl, path: 'tmp');
+      // If the file is compressed
+      if (extension(file.path) == '.bz2') {
+        // Decompress it
+        final inputStream = InputFileStream(file.path);
+        final archive = BZip2Decoder().decodeBuffer(inputStream);
+        final outputStream = OutputFileStream(join(tmpDir.path, ttrFile.name));
+        outputStream.writeBytes(archive);
+        await outputStream.close();
+        await inputStream.close();
+        // Delete the archive
+        await file.delete();
+        file = File(join(tmpDir.path, ttrFile.name));
         // If the file is TTRGame.vlt, extract some info from it
-        if (file.name == 'TTRGame.vlt') {
-          // Download TTRGame.vlt.XXXXXX.bz2
-          File compressedFile = await downloadFile(file.downloadUrl);
-          // Decompress it
-          final archive =
-              BZip2Decoder().decodeBuffer(InputFileStream(compressedFile.path));
+        if (ttrFile.name == 'TTRGame.vlt') {
           final decode = utf8.decode(archive, allowMalformed: true);
           // Set the attributes to what it can find
           ttrGameAttributes = extractTtrGameAttributes(decode);
         }
-        MongoUtils.insertFile(file);
       }
+      if (ttrFile.name.endsWith('.mf')) {
+        if (ttrFile.name.startsWith('phase')) {
+          // Extract multifile
+          await Process.run('multify', ['-xf', ttrFile.name],
+              workingDirectory: tmpDir.path);
+        } else {
+          // Any other multifiles that aren't base game "phases" should
+          // have their own directory, as they could overwrite real
+          // phases. For example, winter_decorations overwrites actual
+          // textures, like a content pack.
+
+          // Creates 'winter_decorations' folder
+          Directory subdir = await Directory(
+                  join(tmpDir.path, basenameWithoutExtension(ttrFile.name)))
+              .create();
+          // Move the multifile into this folder
+          file.rename(join(subdir.path, ttrFile.name));
+          // Extract multifile
+          await Process.run('multify', ['-xf', ttrFile.name],
+              workingDirectory: subdir.path);
+        }
+      }
+    }
+    print('Finished!');
+
+    // Copy the entire tmp dir to the github
+    await copyPath(tmpDir.path, GitUtils.directory.path);
+    final commitSuccess =
+        await GitUtils.commitAndPush(ttrGameAttributes?['VERSION']);
+    if (!commitSuccess) {
+      stderr.writeln('Unable to commit!');
     }
 
     var servers = await MongoUtils.fetchAllServersWithUpdates();
@@ -81,10 +140,11 @@ class UpdateScanner {
     }
   }
 
-  Future<File> downloadFile(String url) async {
+  Future<File> downloadFile({required String url, required String path}) async {
     final client = await HttpClient().getUrl(Uri.parse(url));
     final response = await client.close();
-    final compressedFile = File(basename(url));
+    // "tmp/" + "TTRGame.vlt.XXXXX.bz2"
+    final compressedFile = File(join(path, basename(url)));
     await response.pipe(compressedFile.openWrite());
     return compressedFile;
   }
