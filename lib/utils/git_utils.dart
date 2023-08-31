@@ -44,13 +44,7 @@ class GitUtils {
     }
     process = await Process.run('git', ['config', 'user.name', 'Froggy Bot'],
         workingDirectory: directory.path);
-    process = await Process.run(
-        'git',
-        [
-          'config',
-          'user.email',
-          '<>'
-        ],
+    process = await Process.run('git', ['config', 'user.email', '<>'],
         workingDirectory: directory.path);
     return true;
   }
@@ -76,8 +70,10 @@ class GitUtils {
       return false;
     }
     print('Added.');
+
     print('Committing...');
-    process = await Process.start('git', ['commit', '-m', ttrVersion ?? 'Update'],
+    process = await Process.start(
+        'git', ['commit', '-m', ttrVersion ?? 'Update'],
         workingDirectory: directory.path);
     stdout.addStream(process.stdout);
     stderr.addStream(process.stderr);
@@ -88,6 +84,18 @@ class GitUtils {
       }
     }
     print('Committed.');
+
+    print('Config buffer...');
+    process = await Process.start(
+        'git', ['config', 'http.postBuffer', '524288000'],
+        workingDirectory: directory.path);
+    stdout.addStream(process.stdout);
+    stderr.addStream(process.stderr);
+    if (await process.exitCode != 0) {
+      return false;
+    }
+    print('Buffer configured!');
+
     print('Pushing...');
     process =
         await Process.start('git', ['push'], workingDirectory: directory.path);

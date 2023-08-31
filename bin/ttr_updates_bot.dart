@@ -9,11 +9,14 @@ import 'package:ttr_updates_bot/utils/mongo_utils.dart';
 
 void main() async {
   final ghToken = Platform.environment['GH_TOKEN'];
+  print('Cloning repo...');
   final cloneSucceeded = await GitUtils.cloneRepo(
       "https://coocoofroggy:$ghToken@github.com/CoocooFroggy/ttr_update_files.git");
   if (!cloneSucceeded) {
     stderr.writeln('Failed to clone the phase diffing repository.');
     return;
+  } else {
+    print('Clone finished.');
   }
   await DiscordUtils.connect();
   await MongoUtils.connectToDb();
