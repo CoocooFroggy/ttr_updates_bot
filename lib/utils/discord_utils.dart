@@ -20,12 +20,10 @@ class DiscordUtils {
     );
 
     final commands = CommandsPlugin(
-      // Ignore by slashOnly CommandType
-      prefix: (_) => '!',
-      options: CommandsOptions(
-        defaultCommandType: CommandType.slashOnly,
-      ),
-    );
+        prefix: (_) => '!',
+        options: CommandsOptions(
+          type: CommandType.slashOnly,
+        ));
 
     client
       ..registerPlugin(Logging())
