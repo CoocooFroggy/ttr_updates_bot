@@ -1,4 +1,8 @@
-# ttr_updates_bot
+# TTR Updates Bot
+
+A bot that notifies you upon the release of updates to Toontown Rewritten, and uploads the extracted changes to [ttr_update_files](https://github.com/CoocooFroggy/ttr_update_files).
+
+![Screenshot of TTR Updates Bot being used in Discord](assets/SCR-20230916-ntxl.png)
 
 ## Permissions
 
