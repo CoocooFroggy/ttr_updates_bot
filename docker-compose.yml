@@ -1,18 +1,10 @@
-version: '3.9'
+version: '3.4'
 
 services:
   ttr_updates_bot:
-    build: .
-    restart: always
+    container_name: ttr_updates_bot
+    image: ghcr.io/coocoofroggy/ttr_updates_bot:master
+    restart: unless-stopped
     env_file:
-      .env
-
-    links: [
+      - .env
       
-      
-    ]
-    depends_on: [
-      
-      
-    ]
-

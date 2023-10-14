@@ -36,15 +36,15 @@ class GitUtils {
       await directory.delete(recursive: true);
     }
 
-    var process = await Process.run('git', ['clone', url]);
-    if (process.exitCode != 0) {
-      stdout.writeln(process.stdout);
-      stderr.writeln(process.stderr);
+    var process = await Process.start('git', ['clone', url]);
+    stdout.addStream(process.stdout);
+    stderr.addStream(process.stderr);
+    if (await process.exitCode != 0) {
       return false;
     }
-    process = await Process.run('git', ['config', 'user.name', 'Froggy Bot'],
+    await Process.run('git', ['config', 'user.name', 'Froggy Bot'],
         workingDirectory: directory.path);
-    process = await Process.run('git', ['config', 'user.email', '<>'],
+    await Process.run('git', ['config', 'user.email', '<>'],
         workingDirectory: directory.path);
     return true;
   }
