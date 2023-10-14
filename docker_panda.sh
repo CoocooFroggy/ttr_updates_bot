@@ -8,4 +8,4 @@ apt install -y python3-pip
 #cd panda3d/ || exit
 #python3 makepanda/makepanda.py --everything --installer --no-egl --no-gles --no-gles2 --no-opencv
 #dpkg -i panda3d*.deb
-pip3 install panda3d
+pip3 install --break-system-packages panda3d
