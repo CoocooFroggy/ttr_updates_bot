@@ -1,5 +1,9 @@
+import 'dart:convert';
+
+import 'package:json_annotation/json_annotation.dart';
 import 'patch.dart';
 
+@JsonSerializable()
 class TTRFile {
   String name;
   String dl;
@@ -42,6 +46,26 @@ class TTRFile {
               key, Patch.fromJson(value as Map<String, dynamic>, id: key))),
       only: List.from(json['only'] as Iterable),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    // Generate patches
+    final newPatches = {};
+    for (final entry in patches.entries) {
+      final patch = entry.value;
+      newPatches[entry.key] = {
+        'filename': patch.filename,
+        'patchHash': patch.patchHash,
+        'compPatchHash': patch.compPatchHash,
+      };
+    }
+    return {
+      'dl': dl,
+      'hash': hash,
+      'compHash': compHash,
+      'patches': jsonEncode(newPatches),
+      'only': jsonEncode(only),
+    };
   }
 
   @override

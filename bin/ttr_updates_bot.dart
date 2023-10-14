@@ -25,10 +25,13 @@ void main(List<String> args) async {
   // The --manual flag only downloads files from a local source and pushes them.
   // It does not interact with Discord or MongoDB.
   parser.addFlag('manual');
+  parser.addFlag('generate');
   final results = parser.parse(args);
   
   if (results['manual'] as bool) {
     ManualUpdateScanner().checkForNewFiles();
+  } else if (results['generate'] as bool) {
+    
   } else {
     await DiscordUtils.connect();
     await MongoUtils.connectToDb();
