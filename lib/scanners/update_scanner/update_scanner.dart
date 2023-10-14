@@ -96,7 +96,7 @@ class UpdateScanner {
           // Creates 'winter_decorations' folder
           Directory subdir = await Directory(
                   join(tmpDir.path, basenameWithoutExtension(ttrFile.name)))
-              .create();
+              .create(recursive: true);
           // Move the multifile into this folder
           file.rename(join(subdir.path, ttrFile.name));
           // Extract multifile
@@ -108,6 +108,7 @@ class UpdateScanner {
     print('Finished!');
 
     // Copy the entire tmp dir to the github
+    await tmpDir.create(recursive: true);
     await copyPath(tmpDir.path, GitUtils.directory.path);
     final commitSuccess =
         await GitUtils.commitAndPush(ttrGameAttributes?['VERSION']);
