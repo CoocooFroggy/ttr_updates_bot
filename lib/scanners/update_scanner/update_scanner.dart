@@ -17,7 +17,7 @@ class UpdateScanner {
 
   Future<void> startScanner() async {
     checkForNewFiles();
-    timer = Timer.periodic(Duration(seconds: 30), (timer) {
+    timer = Timer.periodic(Duration(minutes: 15), (timer) {
       checkForNewFiles();
     });
   }

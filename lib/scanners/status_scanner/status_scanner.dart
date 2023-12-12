@@ -11,7 +11,7 @@ class StatusScanner {
 
   Future<void> startScanner() async {
     checkTtrStatus();
-    timer = Timer.periodic(Duration(seconds: 30), (timer) {
+    timer = Timer.periodic(Duration(minutes: 10), (timer) {
       checkTtrStatus();
     });
   }

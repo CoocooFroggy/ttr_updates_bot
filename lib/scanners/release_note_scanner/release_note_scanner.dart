@@ -12,7 +12,7 @@ class ReleaseNoteScanner {
 
   Future<void> startScanner() async {
     checkForNewReleaseNote();
-    timer = Timer.periodic(Duration(seconds: 30), (timer) {
+    timer = Timer.periodic(Duration(minutes: 15), (timer) {
       checkForNewReleaseNote();
     });
   }
